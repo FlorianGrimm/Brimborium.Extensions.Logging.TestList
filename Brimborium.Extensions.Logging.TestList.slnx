@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Brimborium.Extensions.Logging.TestList/Brimborium.Extensions.Logging.TestList.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Brimborium.Extensions.Logging.TestList.Tests/Brimborium.Extensions.Logging.TestList.Tests.csproj" />
+  </Folder>
+</Solution>
