@@ -24,6 +24,16 @@ public static class TestLogggerItemAssertionExtensions {
         return new FindNextAssertion(source.Context, testLoggerItemExpected);
     }
 
+    public static FindNextAssertion FindNextLoggerMessage<T>(
+       this IAssertionSource<TestLoggerSnapshot> source,
+       T expected,
+       [CallerArgumentExpression(nameof(expected))] string? expression = null
+       ) where T : System.Delegate {
+        _ = source.Context.ExpressionBuilder.Append($".FindNextLoggerMessage({expression})");
+        TestLoggerItem testLoggerItemExpected = LoggerMessageExtensions.ExtractFromDelegate(expected);
+        return new FindNextAssertion(source.Context, testLoggerItemExpected);
+    }
+
     public static OccurredWithinAssertion OccurredWithin(
         this IAssertionSource<TestLoggerSnapshot> source,
         TimeSpan expectedHigh,

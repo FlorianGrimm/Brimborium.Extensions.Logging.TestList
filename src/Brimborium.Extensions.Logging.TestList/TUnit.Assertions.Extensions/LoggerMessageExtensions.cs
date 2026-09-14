@@ -45,6 +45,31 @@ public static class LoggerMessageExtensions {
         }
     }
 
+    public static TestLoggerItem ExtractFromDelegate<T>(T expected)
+        where T : System.Delegate {
+        if (expected.Method.GetCustomAttribute<LoggerMessageAttribute>() is not { } loggerMessageAttribute) {
+            throw new ArgumentException("LoggerMessageAttribute is required");
+        }
+
+        {
+            var eventName = loggerMessageAttribute.EventName;
+            if (string.IsNullOrEmpty(eventName)) {
+                eventName = expected.Method.Name;
+            }
+            var eventId = loggerMessageAttribute.EventId;
+            if (eventId <= 0) {
+                eventId = GetNonRandomizedHashCode(eventName);
+            }
+            TestLoggerItem testLoggerItem = new TestLoggerItem(
+                EventId: new(eventId, eventName),
+                LogLevel: loggerMessageAttribute.Level,
+                OriginalFormat: loggerMessageAttribute.Message
+                );
+            return testLoggerItem;
+        }
+    }
+
+
 
     /// <summary>
     /// Returns a non-randomized hash code for the given string.
@@ -57,8 +82,8 @@ public static class LoggerMessageExtensions {
         }
 
         int ihash = (int)uhash;
-        var result = (ihash == int.MinValue) 
-            ? 0 
+        var result = (ihash == int.MinValue)
+            ? 0
             : Math.Abs(ihash); // Ensure the result is non-negative
         return result;
     }

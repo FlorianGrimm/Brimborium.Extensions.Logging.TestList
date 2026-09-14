@@ -88,6 +88,40 @@ public class StructuredTests {
         _ = await Assert.That(snapshot).FindNextLoggerMessage(() => LoggerExtension.LogTestOne);
     }
 
+    [Test]
+    public async Task FindNextLoggerMessageDelegateTest003() {
+        ServiceProvider appServiceProvider;
+        {
+            Microsoft.Extensions.DependencyInjection.ServiceCollection services = new();
+            _ = services.AddLogging((loggingBuilder) => {
+                loggingBuilder.AddTestList();
+            });
+            appServiceProvider = services.BuildServiceProvider();
+        }
+
+        // Act
+        var testLoggerBuffer = appServiceProvider.GetTestLoggerBuffer();
+        testLoggerBuffer.Clear();
+
+        var logger = appServiceProvider.GetRequiredService<ILogger<StructuredTests>>();
+
+        logger.LogTestOne(42);
+        logger.LogTestA(43);
+        logger.LogTestB(44);
+        logger.LogTestB(45);
+        logger.LogTestA(46);
+        logger.LogTestOne(47);
+
+        var snapshot = testLoggerBuffer.GetSnapshot();
+        _ = await Assert.That(snapshot).FindNextLoggerMessage(LoggerExtension.LogTestOne);
+        //_ = await Assert.That(snapshot).FindNextLoggerMessage(() => LoggerExtension.LogTestOne)
+        //    .And.MatchesParameter(new Dictionary<string, object?> { { "number", 42 } });
+        //_ = await Assert.That(snapshot).FindNextLoggerMessage(() => LoggerExtension.LogTestA);
+        //_ = await Assert.That(snapshot).FindNextLoggerMessage(() => LoggerExtension.LogTestB);
+        //_ = await Assert.That(snapshot).FindNextLoggerMessage(() => LoggerExtension.LogTestB);
+        //_ = await Assert.That(snapshot).FindNextLoggerMessage(() => LoggerExtension.LogTestA);
+        //_ = await Assert.That(snapshot).FindNextLoggerMessage(() => LoggerExtension.LogTestOne);
+    }
 
     [Test]
     public async Task MatchesParameter_failed_Test001() {
